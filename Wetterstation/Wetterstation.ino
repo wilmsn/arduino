@@ -31,18 +31,15 @@ RF24Network network(radio);
 
 
 DI DITI1(0,0,320,20, &display);
-DICL DICL1(0,21,160,160, &display);
-DIDA DIDA1(10,181,140,50, &display);
-DIMW DIMW1(160,31,159,50, &display);
+DICL DICL1(0,21,150,150, &display);
+DIDA DIDA1(0,181,140,50, &display);
+DIMW DIMW1(147,31,85,50, &display);
 DIMW DIMW2(160,101,159,50, &display);
 DIMW DIMW3(160,171,129,50, &display);
+DIMW DIMW4(235,31,85,50, &display);
 DIBAT DIBAT1(305,3,8,12, &display);
 DI DI_OK(199,200,120,39, &display);
 DI DI_Cancel(0,200,120,39, &display);
-//DIBMP DI_Up(20,20,71,40, &display);
-//DIAR DIAR1(100,20,1, &display);
-//DIAR DIAR2(100,100,2, &display);
-// Set Time
 DIAR SetH_up(50,40,1,&display);
 DIAR SetH_down(50,140,2,&display);
 DIINT SetH(47,90,0,23, &display);
@@ -76,6 +73,7 @@ void DrawWetterstation(){
   DIMW1.Draw();
   DIMW2.Draw();
   DIMW3.Draw();  
+  DIMW4.Draw();  
   DIBAT1.Draw();    
   DICL1.Refresh();
 }
@@ -158,71 +156,22 @@ void setup()   {
 
   DIMW1.Dezimals=1;
   DIMW1.Text1=("Temperatur");
-  DIMW1.Text1_Color=VGA_BLUE;
-  DIMW1.Text1_Size=1;
-  DIMW1.Text1_X=5;
-  DIMW1.Text1_Y=5;
-  DIMW1.Text1_Show=true;
   DIMW1.Text2=("C");
-  DIMW1.Text2_Color=VGA_BLUE;
-  DIMW1.Text2_Size=1;
-  DIMW1.Text2_X=100;
-  DIMW1.Text2_Y=35;
-  DIMW1.Text2_Show=true;
-  DIMW1.Text3=("----");
-  DIMW1.Text3_Color=VGA_RED;
-  DIMW1.Text3_Size=2;
-  DIMW1.Text3_X=10;
-  DIMW1.Text3_Y=30;
-  DIMW1.Text3_Show=true;
-  DIMW1.EEPROM_Base = 0x0000;
-  DIMW1.ActionText="Temperatur";
   DIMW1.init();
 
   DIMW2.Text1=("Luftdruck");
-  DIMW2.Text1_Color=VGA_BLUE;
-  DIMW2.Text1_Size=1;
-  DIMW2.Text1_X=5;
-  DIMW2.Text1_Y=5;
-  DIMW2.Text1_Show=true;
   DIMW2.Text2=("hPa");
-  DIMW2.Text2_Color=VGA_BLUE;
-  DIMW2.Text2_Size=1;
-  DIMW2.Text2_X=100;
-  DIMW2.Text2_Y=35;
-  DIMW2.Text2_Show=true;
-  DIMW2.Text3=("----");
-  DIMW2.Text3_Color=VGA_RED;
-  DIMW2.Text3_Size=2;
-  DIMW2.Text3_X=10;
-  DIMW2.Text3_Y=30;
-  DIMW2.Text3_Show=true;
-  DIMW2.EEPROM_Base = 0x0100;
-  DIMW2.ActionText="Luftdruck";
   DIMW2.init();
   
-  DIMW3.Dezimals=3;
+  DIMW3.Dezimals=2;
   DIMW3.Text1=("Spannung");
-  DIMW3.Text1_Color=VGA_BLUE;
-  DIMW3.Text1_Size=1;
-  DIMW3.Text1_X=5;
-  DIMW3.Text1_Y=5;
-  DIMW3.Text1_Show=true;
   DIMW3.Text2=("V");
-  DIMW3.Text2_Color=VGA_BLUE;
-  DIMW3.Text2_Size=1;
-  DIMW3.Text2_X=100;
-  DIMW3.Text2_Y=35;
-  DIMW3.Text2_Show=true;
-  DIMW3.Text3=("----");
-  DIMW3.Text3_Color=VGA_RED;
-  DIMW3.Text3_Size=2;
-  DIMW3.Text3_X=10;
-  DIMW3.Text3_Y=30;
-  DIMW3.Text3_Show=true;
-  DIMW3.EEPROM_Base = 0x0200;
-  DIMW3.ActionText="Feuchte";
   DIMW3.init();
+
+  DIMW4.Dezimals=1;
+  DIMW4.Text1=("Feuchte");
+  DIMW4.Text2=("%");
+  DIMW4.init();
 
   now = rtc.getTime();
 

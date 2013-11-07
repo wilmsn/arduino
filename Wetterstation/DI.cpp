@@ -18,34 +18,35 @@ DI::DI(int startx, int starty, int deltax, int deltay, UTFT *ptrUTFT){
   BackgroundColor=VGA_GRAY; 
   DrawBorder=true;
   DrawBackground=true;
+  TextDefaultColor=VGA_BLUE;
   Text1="----";
-  Text1_X=-1; 
-  Text1_Y=-1;
+  Text1_X=10; 
+  Text1_Y=10;
   Text1_Show=true;
-  Text1_Color=VGA_BLUE;
+  Text1_Color=TextDefaultColor;
   Text2="";
   Text2_Size=1; 
   Text2_X=-1; 
   Text2_Y=-1;
-  Text2_Color=VGA_BLUE;
+  Text2_Color=TextDefaultColor;
   Text2_Show=false;
   Text3="";
   Text3_Size=1; 
   Text3_X=-1; 
   Text3_Y=-1;
-  Text3_Color=VGA_BLUE;
+  Text3_Color=TextDefaultColor;
   Text3_Show=false;
   Text4="";
   Text4_Size=1; 
   Text4_X=-1; 
   Text4_Y=-1;
-  Text4_Color=VGA_BLUE;
+  Text4_Color=TextDefaultColor;
   Text4_Show=false;
   Text5="";
   Text5_Size=1; 
   Text5_X=-1; 
   Text5_Y=-1;
-  Text5_Color=VGA_BLUE;
+  Text5_Color=TextDefaultColor;
   Text5_Show=false;
   ActionText="";
 }
@@ -228,6 +229,9 @@ DICL::DICL(int startx, int starty, int deltax, int deltay, UTFT *ptrUTFT) : DI(s
   RefreshAll=true;
   hour=-1;
   init();
+  old_sec=0;
+  old_min=0;
+  old_hour=0;
 }
 
 void DICL::init(){
@@ -275,19 +279,9 @@ void DICL::drawZeiger(int m, int l, uint16_t col) {
   _UTFT->drawLine(x4+x0+clockCenterX, y4+y0+clockCenterY, x1+x0+clockCenterX, y1+y0+clockCenterY);
 }
 
-void DICL::drawSec(int s) {
-  int ps = s-1;
+void DICL::drawSec(int s, uint16_t col) {
   int x,y;
-
-  if (ps==-1) ps=59;
-  ps=ps*6;
-  ps=ps+270;
-  _UTFT->setColor(ZifferBlattFarbe);
-  x=(dx/2-6)*cos(ps*0.0175);
-  y=(dy/2-6)*sin(ps*0.0175);
-  _UTFT->fillCircle(x0+clockCenterX+x,y0+clockCenterY+y,2); 
-
-  _UTFT->setColor(SekundenZeigerFarbe);
+  _UTFT->setColor(col);
   s=s*6;
   s=s+270;
   x=(dx/2-6)*cos(s*0.0175);
@@ -295,43 +289,35 @@ void DICL::drawSec(int s) {
   _UTFT->fillCircle(x0+clockCenterX+x,y0+clockCenterY+y,2); 
 }
 
-void DICL::drawMin(int m)
+void DICL::drawMin(int m, uint16_t col)
 {
-  int pm = m-1;
-  
-  if (pm==-1) pm=59;
-  pm=pm*6;
-  pm=pm+270;
-  drawZeiger(pm, dx/2-25, BackgroundColor);
-  
   m=m*6;
   m=m+270;
-  drawZeiger(m, dx/2-25, MinutenZeigerFarbe);
+  drawZeiger(m, dx/2-25, col);
 }
 
-void DICL::drawHour(int h, int m){
-  int ph = h;
-  
-  if (m==0) ph=((ph-1)*30)+((m+59)/2);
-  else ph=(ph*30)+((m-1)/2);
-  ph=ph+270;
-  drawZeiger(ph, 3*(dx/2-25)/4, BackgroundColor);
-
+void DICL::drawHour(int h, int m, uint16_t col){
   h=(h*30)+(m/2);
   h=h+270;
-  drawZeiger(h, 3*(dx/2-25)/4, StundenZeigerFarbe);
+  drawZeiger(h, 3*(dx/2-25)/4, col);
 }
 
 void DICL::Refresh(){
   if (hour > -1) {
     if (sec == 0 || RefreshAll) {
       DI::Refresh();
-      drawMin(min);
-      drawHour(hour, min);
+      drawMin(old_min, BackgroundColor);
+      drawHour(old_hour, old_min, BackgroundColor);
+      drawMin(min, MinutenZeigerFarbe);
+      drawHour(hour, min, StundenZeigerFarbe);  
       RefreshAll=false;
+      old_min=min;
+      old_hour=hour;
     }
-    drawSec(sec);
+    drawSec(old_sec,ZifferBlattFarbe);
+    drawSec(sec, SekundenZeigerFarbe);
   }
+  old_sec=sec;
 }
 
 void DICL::Draw(){
@@ -345,7 +331,9 @@ void DICL::Draw(){
 }
 
 void DICL::newValue(int h, int m, int s){
-  hour=h; min=m; sec=s; 
+  sec=s;
+  hour=h;
+  min=m; 
 }
 
 ///////////////////////////////// Ende DICL ///////////////////////////////////////
@@ -393,8 +381,16 @@ DIMW::DIMW(int startx, int starty, int deltax, int deltay, UTFT *ptrUTFT) : DI(s
   Value_LastTime=0;
   TextDefaultColor=VGA_BLUE;
   TextErrorColor=VGA_RED;
-  Value_X=10;
+  Value_X=5;
   Value_Y=30;
+  Text1_Size=1;
+  Text1_X=5;
+  Text1_Y=5;
+  Text1_Show=true;
+  Text2_Size=1;
+  Text2_X=70;
+  Text2_Y=35;
+  Text2_Show=true;
 }
 
 void DIMW::NewValue(float newvalue){
@@ -404,7 +400,6 @@ void DIMW::NewValue(float newvalue){
   Value_IsOld=false;
   Text3_Show=false;
   Value_IsNew=true;
-  Refresh();
 }
 
 float DIMW::GetValue(){
@@ -449,7 +444,24 @@ void DIMW::Refresh(){
   _UTFT->setBackColor(BackgroundColor);
   if (Value_Valid) {
     if (Value_IsOld) _UTFT->setColor(TextErrorColor); else _UTFT->setColor(TextDefaultColor);
-    if (! Dezimals) _UTFT->printNumI(Value, x0+Value_X, y0+Value_Y);
+    _UTFT->print("    ", x0+Value_X, y0+Value_Y);
+    if (! Dezimals) {
+      if (Value > 0) {
+        if (Value < 10) {
+          _UTFT->printNumI(Value, x0+Value_X+48, y0+Value_Y);
+        } else {
+          if (Value < 100) {
+            _UTFT->printNumI(Value, x0+Value_X+32, y0+Value_Y);
+          } else {
+            if (Value < 1000) {
+              _UTFT->printNumI(Value, x0+Value_X+16, y0+Value_Y);
+            } else {
+              _UTFT->printNumI(Value, x0+Value_X, y0+Value_Y);
+            }
+          }
+        }
+      }
+    }
     else _UTFT->printNumF(Value, Dezimals, x0+Value_X, y0+Value_Y);
   } else {
     _UTFT->setColor(TextErrorColor);
@@ -521,5 +533,4 @@ void DIBAT::NewValue(float newvalue){
   Value_IsOld=false;
   Text3_Show=false;
   Value_IsNew=true;
-  Refresh();
 }

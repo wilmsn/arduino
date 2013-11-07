@@ -1,6 +1,24 @@
 /*####################################################################
+Eine Sammlung von Anzeigeelementen.
+Der Zweck eines jeden Elementes ist vor dem Element beschrieben.
+Zur Vereinheitlichung der Nutzung wird folgendes festgelegt:
+Initialisierung: <Name des Objektes>(<X-Position der oberen linken Ecke>,<Y-Position der oberen linken Ecke>,<Breite in Pixel>,<Höhe in Pixel>,<Displayhändler>)
+Allgemeine Methoden:
 
+<Objektname>.init()
+Nimmt eine Aktualisierung des Objektes vor. Muss nur aufgerufen werden wenn nach der Initialisierung Eigenschaften veränderung wurden.
 
+<Objektname>.draw()
+Zeichnet das komplette Objekt.
+
+<Objektname>.refresh()
+Zeichnet nur die veraenderlichen Inhalte neu.
+
+<Objektname>.newValue()
+Übergibt einen neuen Wert(e) an das Objekt. Dieser Wert wird (noch) nicht angezeigt ==> refresh().   
+
+<Objektname>.istouched(<touch_X>,<touch_Y>)
+Liefert "True" zurück wenn die übergebenen Koordinaten innerhalb der Objektflaeche liegen.
 
 
 
@@ -30,6 +48,7 @@ class DI{
     UTFT *_UTFT;
     
   public:
+    uint16_t TextDefaultColor;
     uint16_t Text1_Color;
     uint16_t Text2_Color;
     uint16_t Text3_Color;
@@ -106,15 +125,18 @@ Die Klasse DICL stellt eine Uhr als Kind von DI bereit.
 class DICL : public DI{
   private:
   void drawMark(int h);
-  void drawSec(int s);
-  void drawMin(int m);
-  void drawHour(int h, int m);
+  void drawSec(int s, uint16_t col);
+  void drawMin(int m, uint16_t col);
+  void drawHour(int h, int m, uint16_t col);
   void drawZeiger(int m, int l, uint16_t col);
   int clockCenterX;
   int clockCenterY;
   int sec;
   int min;
   int hour;
+  int old_sec;
+  int old_min;
+  int old_hour;
   Time  t;
   int oldsec;
   boolean RefreshAll;
@@ -161,7 +183,6 @@ class DIMW : public DI{
     unsigned int EEPROM_Base;   
     float StoreOffset;
     float StoreFactor;
-    uint16_t TextDefaultColor;
     uint16_t TextErrorColor;
     int Value_X, Value_Y;
     DIMW(int startx, int starty, int deltax, int deltay, UTFT *ptrUTFT);
