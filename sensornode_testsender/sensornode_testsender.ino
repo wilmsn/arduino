@@ -1,7 +1,7 @@
 /*
 Testsender: 
 Sendet fortlaufend jede Sekunde ein Signal: Die aktuell gemessene Batteriespannung.
-Zweck: Prüfung von Übertragungsqualität und Standorten 
+Zweck: Prï¿½fung von ï¿½bertragungsqualitï¿½t und Standorten 
  */
 #include <RF24Network.h>
 #include <RF24.h>
@@ -49,7 +49,7 @@ void senddata(unsigned long sensor, float value) {
 void loop(void)
 {
   digitalWrite(VMESS_OUT, HIGH);
-  digitalWrite(LED, LOW);    // turn the LED off by making the voltage LOW
+  digitalWrite(LED, LOW);    
   delay(100);
   vmess=analogRead(VMESS_IN);
   vmess=vmess+analogRead(VMESS_IN);
@@ -58,6 +58,6 @@ void loop(void)
   vmess=vmess+analogRead(VMESS_IN);
   senddata(SENSOR999, vmess/5.0);
   digitalWrite(VMESS_OUT, LOW);
-  digitalWrite(LED, HIGH);   // turn the LED on (HIGH is the voltage level)
+  digitalWrite(LED, HIGH);   
   delay(900);
 }
